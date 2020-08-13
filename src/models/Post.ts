@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const aws = require("aws-sdk");
-const fs = require('fs');
-const path = require('path');
-const { promisify } = require('util');
+import mongoose, { Types, Schema, Document } from 'mongoose'
+import aws from "aws-sdk"
+import fs from 'fs'
+import path from 'path'
+import { promisify } from 'util'
 
 const s3 = new aws.S3();
 
@@ -22,16 +22,25 @@ const PostSchema = new mongoose.Schema({
     }
 })
 
-PostSchema.pre('save', function() {
+interface IPostSchema extends Document{
+    name: string;
+    size: number;
+    key: string;
+    url: string;
+    user: Types.ObjectId
+    createdAt: Schema.Types.Date
+}
+
+PostSchema.pre<IPostSchema>('save', function() {
     if(!this.url){
         this.url = `${process.env.APP_URL}/files/${this.key}`;
     }
 })
 
-PostSchema.pre('remove', function(){
+PostSchema.pre<IPostSchema>('remove', function(){
     if(process.env.STORAGE_TYPE === 's3'){
        return s3.deleteObject({
-           Bucket: process.env.AWS_BUCKET,
+           Bucket: process.env.AWS_BUCKET as string,
            Key: this.key
        }).promise()
     }else {
@@ -41,4 +50,4 @@ PostSchema.pre('remove', function(){
     }
 })
 
-module.exports = mongoose.model("Post",PostSchema);
+export default mongoose.model<IPostSchema>("Post",PostSchema);

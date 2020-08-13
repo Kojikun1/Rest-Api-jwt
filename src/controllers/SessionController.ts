@@ -1,10 +1,11 @@
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+import User from '../models/User';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { Request, Response } from 'express';
 
 class SessionController {
 
-    async store(req,res){
+    async store(req: Request ,res: Response){
 
         const { email, password } = req.body;
 
@@ -23,9 +24,9 @@ class SessionController {
                return res.status(400).json({message: "Wrong password"});
            }
 
-           user.password = undefined;
+           user.password = '';
 
-           const token = jwt.sign({userId: user._id},process.env.APP_SECRET,{
+           const token = jwt.sign({userId: user._id},process.env.APP_SECRET as string,{
             expiresIn: '7d'
            });
 
@@ -39,4 +40,4 @@ class SessionController {
     }
 }
 
-module.exports = new SessionController();
+export default SessionController;

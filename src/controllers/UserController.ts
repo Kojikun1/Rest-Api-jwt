@@ -1,13 +1,13 @@
-const User = require('../models/User');
-
+import User, { IUserSchema } from '../models/User';
+import { Request, Response } from 'express';
 class UserController {
-    async index(req,res){
+    async index(req: Request ,res: Response ){
 
         let users = await User.find();
         
         return res.status(200).json(users);
     }
-    async store(req,res){
+    async store(req: Request ,res: Response ){
 
         const { name, email, password } = req.body;
 
@@ -19,9 +19,10 @@ class UserController {
                 return res.status(400).json({message: "User with this email already exist"});
             }
             
-            user = await User.create({name, email, password});
+            user = await new User({name, email, password});
 
-            user.password = undefined;
+            await user.save();
+            user.password = '';
 
             return res.status(200).json({user, message: "Successful registered"});
 
@@ -31,10 +32,10 @@ class UserController {
            return res.status(400).json({message: "Failure to create User"});
       }
     }
-   async update(req,res){
+   async update(req: Request ,res: Response ){
        const userId = req.userId;
        const { name = null , email = null , password = null} = req.body;
-       let response = {};
+       let response: any = {};
         try{
             if(name && email){
             response.user = await User.findByIdAndUpdate(userId,{
@@ -42,9 +43,9 @@ class UserController {
                },{new: true});
             }
             if(password){
-                await User.findById(userId,(err,doc)=> {
+                await User.findById(userId,(err,doc: IUserSchema)=> {
                     if(err) return err;
-
+                    
                     doc.password = password;
                     doc.save();
                 })
@@ -61,4 +62,4 @@ class UserController {
     }
 }
 
-module.exports = new UserController();
+export default UserController;

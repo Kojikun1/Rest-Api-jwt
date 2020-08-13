@@ -1,8 +1,9 @@
-const Post = require('../models/Post');
-const User = require('../models/User');
+import { Request, Response} from 'express';
+import Post from '../models/Post';
+import User from '../models/User';
 
 class PostController{
-    async index(req,res){
+    async index(req: Request, res: Response){
         const { user_id }  = req.params
 
         console.log(req.params);
@@ -12,14 +13,14 @@ class PostController{
         return res.json(posts);
 
     }
-    async list(req,res){
+    async list(req: Request, res: Response){
         
         const posts = await Post.find();
 
         return res.json(posts);
 
     }
-    async store(req, res) {
+    async store(req: Request , res: Response) {
        try{
         const { originalname: name, size, key, location: url } = req.file;
 
@@ -31,13 +32,14 @@ class PostController{
             await Post.findByIdAndRemove(post._id);
         }
    
-        post = await Post.create({
+        post = await new Post({
             name,
             size,
             key,
             url,
             user: userId
         })
+        post.save();
 
         console.log(req.file);
 
@@ -55,7 +57,7 @@ class PostController{
        }
        
     }
-    async delete(req,res){
+    async delete(req: Request, res: Response){
         const { avatar_id }  = req.params;
 
         try{
@@ -78,4 +80,4 @@ class PostController{
     }
 }
 
-module.exports = new PostController();
+export default  PostController;

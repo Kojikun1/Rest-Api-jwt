@@ -1,16 +1,17 @@
-const Todo = require('../models/Todo');
-const User = require('../models/User');
+import Todo from '../models/Todo';
+import User from '../models/User';
+import { Request, Response } from 'express';
 
 
 class TodoController {
-    async index(req,res){
+    async index(req: Request ,res: Response){
         const userId = req.userId;
 
         const todos = await Todo.find({user: userId});
         
         return res.status(200).json(todos);
     }
-    async store(req,res){
+    async store(req: Request ,res: Response ){
         const { content, completed = false } = req.body;
         const userId = req.userId;
 
@@ -32,7 +33,7 @@ class TodoController {
              return res.status(400).json({message: "Failure to create Todo"});
         }
     }
-    async update(req,res){
+    async update(req: Request ,res: Response ){
         const { todo_id } = req.params;
 
         const { completed } = req.body;
@@ -48,15 +49,15 @@ class TodoController {
             return res.status(400).json({message: "Failure to update todo"});
         }
     }
-    async delete(req,res){
+    async delete(req: Request ,res: Response ){
         const { todo_id } = req.params;
 
         const userId = req.userId;
 
         try {
             await Todo.findByIdAndDelete(todo_id);
-
             const user = await User.findByIdAndUpdate(userId, {
+                // @ts-ignore
                 $pull: { todo_list: todo_id }
             }, {new: true})
 
@@ -68,4 +69,4 @@ class TodoController {
     }
 }
 
-module.exports = new TodoController();
+export default TodoController;

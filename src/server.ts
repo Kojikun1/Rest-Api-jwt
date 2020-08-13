@@ -1,15 +1,15 @@
 require('dotenv').config();
-const express = require('express');
-const mongoose = require("mongoose");
-const cors = require('cors');
-const path = require('path');
-const { errors } = require('celebrate');
+import express from 'express';
+import mongoose  from "mongoose";
+import cors  from 'cors';
+import path from 'path';
+import { errors } from 'celebrate';
 
 const app = express();
 
-const routes = require('./routes');
+import routes from './routes';
 
-mongoose.connect(process.env.MONGODB_URL,
+mongoose.connect(process.env.MONGODB_URL as string,
 {
     useNewUrlParser: true,
     useUnifiedTopology: true,

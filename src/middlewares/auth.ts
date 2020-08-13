@@ -1,6 +1,11 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction} from 'express';
 
-module.exports  = (req,res,next) => {
+interface TokenInterface {
+    userId: string;
+}
+
+export default (req: Request,res: Response,next: NextFunction) => {
       const authHeader = req.headers.authorization;
 
       if(!authHeader){
@@ -20,13 +25,13 @@ module.exports  = (req,res,next) => {
     }
        //console.log(process.env.APP_SECRET);
 
-      jwt.verify(token,process.env.APP_SECRET,(error,decoded) => {
+      jwt.verify(token,process.env.APP_SECRET as string,(error,decoded) => {
           if(error) {
               console.log(error);
             return res.status(401).json({message: "failure to authenticate"});
           }
 
-          req.userId = decoded.userId;
+          req.userId = (decoded as TokenInterface).userId;
       })
 
       return next();
