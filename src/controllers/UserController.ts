@@ -19,7 +19,7 @@ class UserController {
                 return res.status(400).json({message: "User with this email already exist"});
             }
             
-            user = await new User({name, email, password});
+            user = new User({name, email, password});
 
             await user.save();
             user.password = '';
