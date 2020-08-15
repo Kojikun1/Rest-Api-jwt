@@ -32,14 +32,14 @@ class PostController{
             await Post.findByIdAndRemove(post._id);
         }
    
-        post = await new Post({
+        post = new Post({
             name,
             size,
             key,
             url,
             user: userId
         })
-        post.save();
+        await post.save();
 
         console.log(req.file);
 
